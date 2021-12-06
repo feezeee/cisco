@@ -2,18 +2,18 @@
 ------Router4------
 en
 conf t
-int fa0/0
+int fa0/1
 ip address 71.130.0.1 255.254.0.0
 no shutdown
 ex
-int fa0/1
+int fa0/0
 ip address 191.217.0.1 255.255.0.0
 no shutdown
 ex
 
 router ospf 1
-network 191.217.0.0 0.0.255.255 area 1
-network 71.130.0.0 0.1.255.255 area 1
+network 191.217.0.0 0.0.255.255 area 0
+network 71.130.0.0 0.1.255.255 area 0
 
 
 
@@ -24,42 +24,42 @@ int fa0/0
 ip address 191.217.0.2 255.255.0.0
 no shutdown
 ex
-int fa0/1
+int fa1/0
 ip address 14.126.228.1 255.255.255.128
 no shutdown
 ex
-int fa1/0
+int fa0/1
 ip address 168.26.128.1 255.255.224.0
 no shutdown
 ex
 
 router ospf 1
-network 191.217.0.0 0.0.255.255 area 1
-network 14.126.228.0 0.0.0.127 area 1
-network 168.26.128.0 0.0.31.255 area 1
+network 191.217.0.0 0.0.255.255 area 0
+network 14.126.228.0 0.0.0.127 area 0
+network 168.26.128.0 0.0.31.255 area 0
 
 
 
 ------Router 1------
 en
 conf t
-int fa0/0
+int fa0/1
 ip address 71.130.0.2 255.254.0.0
 no shutdown
 ex
-int fa0/1
+int fa1/0
 ip address 14.126.228.2 255.255.255.128
 no shutdown
 ex
-int fa1/0
+int fa0/0
 ip address 62.148.153.129 255.255.255.240
 no shutdown
 ex
 
 router ospf 1
-network 71.130.0.0 0.1.255.255 area 1
-network 14.126.228.0 0.0.0.127 area 1
-network 62.148.153.128 0.0.0.15 area 1
+network 71.130.0.0 0.1.255.255 area 0
+network 14.126.228.0 0.0.0.127 area 0
+network 62.148.153.128 0.0.0.15 area 0
 
 
 
@@ -67,23 +67,23 @@ network 62.148.153.128 0.0.0.15 area 1
 ------Router 3------
 en
 conf t
-int fa0/0
+int fa0/1
 ip address 168.26.128.2 255.255.224.0
 no shutdown
 ex
-int fa0/1
+int fa1/0
 ip address 131.179.0.1 255.255.192.0
 no shutdown
 ex
-int fa1/0
+int fa0/0
 ip address 154.7.152.1 255.255.255.0
 no shutdown
 ex
 
 router ospf 1
-network 168.26.128.0 0.0.31.255 area 1
-network 131.179.0.0 0.0.63.255 area 1
-network 154.7.152.0 0.0.0.255 area 1
+network 168.26.128.0 0.0.31.255 area 0
+network 131.179.0.0 0.0.63.255 area 0
+network 154.7.152.0 0.0.0.255 area 0
 
 
 
@@ -94,19 +94,19 @@ int fa0/0
 ip address 62.148.153.130 255.255.255.240
 no shutdown
 ex
-int fa0/1
+int fa1/0
 ip address 131.179.0.2 255.255.192.0
 no shutdown
 ex
-int fa1/0
+int fa1/1
 ip address 206.22.143.129 255.255.255.128
 no shutdown
 ex
 
 router ospf 1
-network 62.148.153.128 0.0.0.15 area 1
-network 131.179.0.0 0.0.63.255 area 1
-network 206.22.143.128 0.0.0.127 area 1
+network 62.148.153.128 0.0.0.15 area 0
+network 131.179.0.0 0.0.63.255 area 0
+network 206.22.143.128 0.0.0.127 area 0
 
 
 ------Router 2------
@@ -120,16 +120,24 @@ int fa0/1
 ip address 105.138.0.1 255.254.0.0
 no shutdown
 ex
-int fa1/0
+int fa1/1
 ip address 206.22.143.130 255.255.255.128
 no shutdown
 ex
 
 router ospf 1
-network 154.7.152.0 0.0.0.255 area 1
-network 105.138.0.0 0.1.255.255 area 1
-network 206.22.143.128 0.0.0.127 area 1
+network 154.7.152.0 0.0.0.255 area 0
+network 206.22.143.128 0.0.0.127 area 0
 
+redistribute bgp 10 subnets
+
+router bgp 10
+neighbor 105.138.0.2 remote-as 20
+network 105.138.0.0 mask 255.254.0.0
+network 154.7.152.0 mask 255.255.192.0
+network 206.22.143.128 mask 255.255.255.128
+
+redistribute ospf 1
 
 
 ------Router 7------
@@ -145,8 +153,16 @@ no shutdown
 ex
 
 router ospf 1
-network 105.138.0.0 0.1.255.255 area 1
+network 198.192.239.0 0.0.0.31 area 0
 
+redistribute bgp 20 subnets
+
+router bgp 20
+neighbor 105.138.0.1 remote-as 10
+network 105.138.0.0 mask 255.254.0.0
+network 198.192.239.0 mask 255.255.255.224
+
+redistribute ospf 1
 
 
 ------Router 5------
@@ -158,4 +174,4 @@ no shutdown
 ex
 
 router ospf 1
-network 198.192.239.0 0.0.0.31 area 1
+network 198.192.239.0 0.0.0.31 area 0
